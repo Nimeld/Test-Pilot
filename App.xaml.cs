@@ -34,7 +34,8 @@ public partial class App : Application
         mainWindow.SetDependencies(_configService, _hotKeyService);
         mainWindow.LoadConfig();
 
-        mainWindow.Hide();
+        mainWindow.Show();
+        mainWindow.Activate();
     }
 
     protected override void OnExit(ExitEventArgs e)

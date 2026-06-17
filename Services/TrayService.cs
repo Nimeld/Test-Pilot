@@ -16,7 +16,7 @@ public class TrayService : IDisposable
     {
         _icon = new NotifyIcon
         {
-            Icon = SystemIcons.Application,
+            Icon = LoadCustomIcon(),
             Text = "TestPilot",
             Visible = true
         };
@@ -30,6 +30,19 @@ public class TrayService : IDisposable
         _icon.ContextMenuStrip = menu;
 
         _window.Closing += (_, e) => { e.Cancel = true; _window.Hide(); };
+    }
+
+    private static Icon LoadCustomIcon()
+    {
+        try
+        {
+            var path = System.IO.Path.Combine(
+                System.AppDomain.CurrentDomain.BaseDirectory, "app.ico");
+            if (System.IO.File.Exists(path))
+                return new Icon(path);
+        }
+        catch { }
+        return SystemIcons.Application;
     }
 
     private void ShowWindow()
