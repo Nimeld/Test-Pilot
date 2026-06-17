@@ -9,10 +9,15 @@ public partial class MainWindow : Window
 {
     private ConfigService? _configService;
     private HotKeyService? _hotKeyService;
+    private Config? _originalConfig;
     private string _pendingLaunchKey = "F11";
     private string _pendingKillKey = "F12";
 
-    public MainWindow() => InitializeComponent();
+    public MainWindow()
+    {
+        InitializeComponent();
+        IsVisibleChanged += OnVisibilityChanged;
+    }
 
     internal void SetDependencies(ConfigService configService, HotKeyService hotKeyService)
     {
@@ -25,6 +30,13 @@ public partial class MainWindow : Window
         var config = _configService?.Load();
         if (config != null)
         {
+            _originalConfig = new Config
+            {
+                TargetAppPath = config.TargetAppPath,
+                TargetProcessName = config.TargetProcessName,
+                LaunchHotKey = config.LaunchHotKey,
+                KillHotKey = config.KillHotKey
+            };
             txtPath.Text = config.TargetAppPath;
             _pendingLaunchKey = config.LaunchHotKey;
             _pendingKillKey = config.KillHotKey;
@@ -37,6 +49,13 @@ public partial class MainWindow : Window
     internal void UpdateStatus(string status)
     {
         Dispatcher.Invoke(() => txtStatus.Text = status);
+    }
+
+    private void OnVisibilityChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+        // Re-register original hotkeys when window hides without save
+        if ((bool)e.NewValue == false && _originalConfig != null)
+            _hotKeyService?.Register(_originalConfig);
     }
 
     private void BrowseClick(object sender, RoutedEventArgs e)
@@ -65,12 +84,26 @@ public partial class MainWindow : Window
             KillHotKey = _pendingKillKey
         };
         _configService?.Save(config);
+
+        // Update original so window hide doesn't overwrite with old keys
+        _originalConfig = new Config
+        {
+            TargetAppPath = config.TargetAppPath,
+            TargetProcessName = config.TargetProcessName,
+            LaunchHotKey = config.LaunchHotKey,
+            KillHotKey = config.KillHotKey
+        };
+
         _hotKeyService?.Register(config);
         txtStatus.Text = "✅ 配置已保存";
     }
 
+    // --- Hotkey capture ---
+
     private void KeyBox_GotFocus(object sender, RoutedEventArgs e)
     {
+        // Temporarily disable global hotkeys during editing
+        _hotKeyService?.Unregister();
         if (sender is System.Windows.Controls.TextBox tb)
             tb.Text = "按下热键...";
     }
