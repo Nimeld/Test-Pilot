@@ -53,7 +53,6 @@ public partial class MainWindow : Window
 
     private void OnVisibilityChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
-        // Re-register original hotkeys when window hides without save
         if ((bool)e.NewValue == false && _originalConfig != null)
             _hotKeyService?.Register(_originalConfig);
     }
@@ -84,8 +83,6 @@ public partial class MainWindow : Window
             KillHotKey = _pendingKillKey
         };
         _configService?.Save(config);
-
-        // Update original so window hide doesn't overwrite with old keys
         _originalConfig = new Config
         {
             TargetAppPath = config.TargetAppPath,
@@ -93,36 +90,44 @@ public partial class MainWindow : Window
             LaunchHotKey = config.LaunchHotKey,
             KillHotKey = config.KillHotKey
         };
-
         _hotKeyService?.Register(config);
         txtStatus.Text = "✅ 配置已保存";
     }
 
-    // --- Hotkey capture ---
+    // --- Hotkey capture with combo support ---
 
     private void KeyBox_GotFocus(object sender, RoutedEventArgs e)
     {
-        // Temporarily disable global hotkeys during editing
         _hotKeyService?.Unregister();
         if (sender is System.Windows.Controls.TextBox tb)
             tb.Text = "按下热键...";
     }
 
-    private static bool TryGetFunctionKey(KeyEventArgs e, out string keyName)
+    private static bool TryGetComboKey(KeyEventArgs e, out string combo)
     {
         var key = e.Key == Key.System ? e.SystemKey : e.Key;
-        keyName = key.ToString();
-        if (keyName.StartsWith("F") && keyName.Length > 1 &&
-            int.TryParse(keyName[1..], out var n) && n >= 1 && n <= 24)
-            return true;
-        keyName = "";
-        return false;
+        var keyName = key.ToString();
+        if (!keyName.StartsWith("F") || keyName.Length <= 1 ||
+            !int.TryParse(keyName[1..], out var n) || n < 1 || n > 24)
+        {
+            combo = "";
+            return false;
+        }
+
+        var parts = new System.Collections.Generic.List<string>();
+        if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control)) parts.Add("Ctrl");
+        if (Keyboard.Modifiers.HasFlag(ModifierKeys.Alt)) parts.Add("Alt");
+        if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift)) parts.Add("Shift");
+        if (Keyboard.Modifiers.HasFlag(ModifierKeys.Windows)) parts.Add("Win");
+        parts.Add(keyName);
+        combo = string.Join("+", parts);
+        return true;
     }
 
     private void LaunchKey_PreviewKeyDown(object sender, KeyEventArgs e)
     {
         e.Handled = true;
-        if (TryGetFunctionKey(e, out var key))
+        if (TryGetComboKey(e, out var key))
         {
             _pendingLaunchKey = key;
             txtLaunchKey.Text = key;
@@ -132,7 +137,7 @@ public partial class MainWindow : Window
     private void KillKey_PreviewKeyDown(object sender, KeyEventArgs e)
     {
         e.Handled = true;
-        if (TryGetFunctionKey(e, out var key))
+        if (TryGetComboKey(e, out var key))
         {
             _pendingKillKey = key;
             txtKillKey.Text = key;
