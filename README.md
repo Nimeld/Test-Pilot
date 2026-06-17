@@ -41,7 +41,7 @@
 
 ```bash
 # 克隆
-git clone https://github.com/你的用户名/TestPilot.git
+git clone https://github.com/Nimeld/Test-Pilot.git
 cd TestPilot
 
 # 构建
@@ -81,6 +81,4 @@ dotnet run
 
 > 热键格式：`Ctrl+F11`、`Alt+F12`、`Shift+F1`、`Ctrl+Shift+F1` 等，支持 F1~F24
 
-## 图标
 
-应用图标为锤子 + 齿轮组合，象征「测试工具」与「工程调试」。

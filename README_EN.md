@@ -41,7 +41,7 @@ Press a hotkey to instantly start the target app (auto-restart if already runnin
 
 ```bash
 # Clone
-git clone https://github.com/your-username/TestPilot.git
+git clone https://github.com/Nimeld/Test-Pilot.git
 cd TestPilot
 
 # Build
@@ -81,6 +81,3 @@ dotnet run
 
 > Hotkey format: `Ctrl+F11`, `Alt+F12`, `Shift+F1`, `Ctrl+Shift+F1`, etc. Supports F1~F24.
 
-## Icon
-
-The app icon combines a hammer and gear — symbolizing "testing tool" and "engineering debugging".
