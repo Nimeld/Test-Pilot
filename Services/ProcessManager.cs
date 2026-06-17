@@ -3,39 +3,53 @@ using System.IO;
 
 namespace Project_03_TestPilot_20260617.Services;
 
+public enum LaunchResult
+{
+    Success,
+    Failed,
+    ConfigInvalid,
+}
+
 public class ProcessManager
 {
     public event Action<string>? StatusChanged;
 
-    public void Launch(Config config)
+    public async Task<LaunchResult> LaunchAsync(Config config)
     {
-        if (string.IsNullOrEmpty(config.TargetAppPath))
+        if (string.IsNullOrEmpty(config.TargetAppPath) || !File.Exists(config.TargetAppPath))
         {
-            StatusChanged?.Invoke("未设置目标程序路径");
-            return;
-        }
-
-        if (!File.Exists(config.TargetAppPath))
-        {
-            StatusChanged?.Invoke("文件不存在");
-            return;
+            StatusChanged?.Invoke("配置无效或文件不存在");
+            return LaunchResult.ConfigInvalid;
         }
 
         var processName = Path.GetFileNameWithoutExtension(config.TargetAppPath);
-        if (Process.GetProcessesByName(processName).Length > 0)
+
+        foreach (var p in Process.GetProcessesByName(processName))
         {
-            StatusChanged?.Invoke($"程序已在运行 ({processName})");
-            return;
+            try { p.Kill(entireProcessTree: true); p.WaitForExit(3000); } catch { }
         }
 
         try
         {
             Process.Start(new ProcessStartInfo { FileName = config.TargetAppPath, UseShellExecute = true });
-            StatusChanged?.Invoke($"已启动: {Path.GetFileName(config.TargetAppPath)}");
         }
         catch (Exception ex)
         {
             StatusChanged?.Invoke($"启动失败: {ex.Message}");
+            return LaunchResult.Failed;
+        }
+
+        await Task.Delay(800);
+
+        if (Process.GetProcessesByName(processName).Length > 0)
+        {
+            StatusChanged?.Invoke($"已启动: {Path.GetFileName(config.TargetAppPath)}");
+            return LaunchResult.Success;
+        }
+        else
+        {
+            StatusChanged?.Invoke("启动失败: 未检测到目标进程");
+            return LaunchResult.Failed;
         }
     }
 
@@ -60,6 +74,7 @@ public class ProcessManager
             try { p.Kill(entireProcessTree: true); p.WaitForExit(3000); }
             catch (Exception ex) { StatusChanged?.Invoke($"关闭失败: {ex.Message}"); }
         }
+
         StatusChanged?.Invoke($"已关闭 {procs.Length} 个进程 ({name})");
     }
 }

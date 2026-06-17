@@ -79,10 +79,39 @@ public class HotKeyService
         if (msg == WM_HOTKEY)
         {
             var id = wParam.ToInt32();
-            if (id == LAUNCH_ID) { _processManager.Launch(_currentConfig); handled = true; }
-            else if (id == KILL_ID) { _processManager.Kill(_currentConfig); handled = true; }
+            if (id == LAUNCH_ID)
+            {
+                handled = true;
+                _ = HandleLaunchAsync();
+            }
+            else if (id == KILL_ID)
+            {
+                handled = true;
+                HandleKill();
+            }
         }
         return IntPtr.Zero;
+    }
+
+    private async Task HandleLaunchAsync()
+    {
+        var result = await _processManager.LaunchAsync(_currentConfig);
+        // Dispatch toast on UI thread
+        await _window.Dispatcher.InvokeAsync(() =>
+        {
+            ToastService.Show(result == LaunchResult.Success
+                ? "目标程序已启动"
+                : "启动失败");
+        });
+    }
+
+    private void HandleKill()
+    {
+        _processManager.Kill(_currentConfig);
+        _window.Dispatcher.Invoke(() =>
+        {
+            ToastService.Show("目标程序已退出");
+        });
     }
 
     private static (uint mod, uint vk) ParseCombo(string combo)
