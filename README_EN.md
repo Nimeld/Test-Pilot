@@ -26,7 +26,7 @@ Press a hotkey to instantly start the target app (auto-restart if already runnin
 | 🚀 **One-click launch** | Launch the target app; auto-kill existing process before restarting |
 | 🛑 **One-click kill** | Kill all processes of the target app |
 | 🔔 **Action feedback** | Centered toast notification on success / failure / exit (1.5s auto-dismiss) |
-| 🔧 **Custom hotkeys** | Supports any combination of Ctrl / Alt / Shift / Win + F1~F12 (some keyboards can be extended to F13~F24) |
+| 🔧 **Custom hotkeys** | Supports any combination of Ctrl / Alt / Shift / Win + F1-F12 (some keyboards can be extended to F13-F24) |
 | 📋 **Config file** | `appsettings.json` stores target path and hotkeys — edit to switch targets |
 | 🎯 **System tray** | Close minimizes to tray; only truly exits via right-click "Exit" |
 
@@ -79,5 +79,5 @@ dotnet run
 | `LaunchHotKey` | Launch hotkey |
 | `KillHotKey` | Kill hotkey |
 
-> Hotkey format: `Ctrl+F11`, `Alt+F12`, `Shift+F1`, `Ctrl+Shift+F1`, etc. Supports F1~F12 (some keyboards can be extended to F13~F24).
+> Hotkey format: `Ctrl+F11`, `Alt+F12`, `Shift+F1`, `Ctrl+Shift+F1`, etc. Supports F1-F12 (some keyboards can be extended to F13-F24).
 
