@@ -26,7 +26,7 @@
 | 🚀 **一键启动** | 按下热键启动目标程序，已有进程自动先关闭再重启 |
 | 🛑 **一键关闭** | 按下热键关闭目标程序所有进程 |
 | 🔔 **执行反馈** | 启动成功 / 失败 / 退出时，屏幕中央弹出提示（1.5 秒自动消失） |
-| 🔧 **自定义热键** | 支持 Ctrl / Alt / Shift / Win + F1~F24 任意组合 |
+| 🔧 **自定义热键** | 支持 Ctrl / Alt / Shift / Win + F1~F12 任意组合（部分键盘可扩展至 F13~F24） |
 | 📋 **配置文件** | `appsettings.json` 记录目标路径和快捷键，修改配置即可切换目标 |
 | 🎯 **托盘运行** | 关闭窗口最小化到系统托盘，右键退出才真正退出 |
 
@@ -67,8 +67,8 @@ dotnet run
 {
   "TargetAppPath": "C:\\Path\\To\\YourApp.exe",
   "TargetProcessName": "YourApp",
-  "LaunchHotKey": "F11",
-  "KillHotKey": "F12"
+  "LaunchHotKey": "Ctrl+F11",
+  "KillHotKey": "Ctrl+F12"
 }
 ```
 
@@ -79,6 +79,6 @@ dotnet run
 | `LaunchHotKey` | 启动快捷键 |
 | `KillHotKey` | 关闭快捷键 |
 
-> 热键格式：`Ctrl+F11`、`Alt+F12`、`Shift+F1`、`Ctrl+Shift+F1` 等，支持 F1~F24
+> 热键格式：`Ctrl+F11`、`Alt+F12`、`Shift+F1`、`Ctrl+Shift+F1` 等，支持 F1~F12（部分键盘可扩展至 F13~F24）
 
 
