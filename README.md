@@ -1,4 +1,4 @@
-﻿<p align="center">
+<p align="center">
   <img src="app.ico" width="64"/>
   <br>中文 | <a href="README_EN.md">English</a>
   <br>全局热键一键启动 / 关闭被测试软件
@@ -42,7 +42,7 @@
 ```bash
 # 克隆
 git clone https://github.com/Nimeld/Test-Pilot.git
-cd TestPilot
+cd Test-Pilot
 
 # 构建
 dotnet build

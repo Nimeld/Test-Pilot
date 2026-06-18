@@ -1,4 +1,4 @@
-﻿<p align="center">
+<p align="center">
   <img src="app.ico" width="64"/>
   <br><a href="README.md">中文</a> | English
   <br>Launch / kill your target app with a single global hotkey
@@ -42,7 +42,7 @@ Press a hotkey to instantly start the target app (auto-restart if already runnin
 ```bash
 # Clone
 git clone https://github.com/Nimeld/Test-Pilot.git
-cd TestPilot
+cd Test-Pilot
 
 # Build
 dotnet build
